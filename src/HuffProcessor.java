@@ -67,12 +67,9 @@ public class HuffProcessor {
 			
 			if (bits == -1) break;
 			
-			int ascii = Integer.parseInt(String.valueOf(bits), 2);
-			freq[ascii] += 1;
+			freq[bits] += 1;
 			
-			out.writeBits(BITS_PER_WORD, bits);
 		}
-		out.close();
 		return freq;
 	}
 	
@@ -113,8 +110,39 @@ public class HuffProcessor {
 			encodings[root.myValue]= path; 
 			return; 
 		}
-		codingHelper(root.myLeft,path+"0",encodings); 
-		codingHelper(root.myRight,path+"1",encodings);
+		
+		codingHelper(root.myLeft,path + "0", encodings); 
+		codingHelper(root.myRight,path + "1", encodings);
+
+	}
+	
+	public void writeHeader(HuffNode root, BitOutputStream out) {
+		 
+		if(root.myLeft == null && root.myRight == null) { // if leafnode then 
+			
+			out.writeBits(1, 1); // single bit of one
+			out.writeBits(BITS_PER_WORD + 1, root.myValue); // write nine bits
+			
+			return;
+			
+		}
+		
+		out.writeBits(1, 0); // single bit of zero
+		writeHeader(root.myLeft, out);
+		writeHeader(root.myRight, out);
+		
+	}
+	
+	public void writeCompressedBits(String[] codings, BitInputStream in, BitOutputStream out) {
+		while (true) {
+			int bits = in.readBits(BITS_PER_WORD);
+			if (bits == -1) break;
+			String code = codings[bits];
+				out.writeBits(code.length(), Integer.parseInt(code,2));
+
+		}
+		String code = codings[PSEUDO_EOF];
+		out.writeBits(code.length(), Integer.parseInt(code,2));
 
 	}
 	
