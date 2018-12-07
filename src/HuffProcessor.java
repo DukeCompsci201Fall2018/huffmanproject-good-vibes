@@ -187,7 +187,7 @@ public class HuffProcessor {
 			    return new HuffNode(morebits, 0, null, null);
 			}
 	}
-	
+	 
 	public void readCompressedBits(HuffNode root, BitInputStream in, BitOutputStream out) {
 			
 			HuffNode current = root; 
