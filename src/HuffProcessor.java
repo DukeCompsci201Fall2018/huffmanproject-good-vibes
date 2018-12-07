@@ -57,7 +57,7 @@ public class HuffProcessor {
 	
 	public int[] readForCounts(BitInputStream in, BitOutputStream out) {
 		
-		int[] freq = new int[(ALPH_SIZE + 1)];
+		int[] freq = new int[ALPH_SIZE + 1];
 		
 		freq[PSEUDO_EOF] = 1;
 		
@@ -67,12 +67,10 @@ public class HuffProcessor {
 			
 			if (bits == -1) break;
 			
-			int ascii = Integer.parseInt(String.valueOf(bits), 2);
-			freq[ascii] += 1;
+			freq[bits] += 1;
 			
-			out.writeBits(BITS_PER_WORD, bits);
 		}
-		out.close();
+
 		return freq;
 	}
 	
