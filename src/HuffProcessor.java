@@ -117,22 +117,31 @@ public class HuffProcessor {
 		codingHelper(root.myRight,path+"1",encodings);
 
 	}
-	public HuffNode writeHeader(HuffNode root, BitOutputStream out) {
-		int bits = in.readBits(1);
-		HuffNode huff;
-		
-		if (bits == -1) throw new HuffException("reading bits has failed");
-		
-		if (bits == 0) {
-		    HuffNode left = writeHeader(root.myLeft, in);
-		    HuffNode right = writeHeader(root.myRight, in);
-		    return new HuffNode(0, 0, left, right); 
+	public void writeHeader(HuffNode root, BitOutputStream out) {
+		if (root.myLeft!=null&& root.myRight!=null) {
+			out.writeBits(1,1);
+			out.writeBits(BITS_PER_WORD+1,1);
+			return; 
 		}
-		
-		else {
-		    int morebits = in.readBits(BITS_PER_WORD + 1);
-		    return new HuffNode(morebits, 0, null, null);
+		out.writeBits(0,1);
+		writeHeader(root.myLeft, out);
+		writeHeader(root.myRight, out);
+	}
+	public void writeCompressedBits(String[] codings,BitInputStream in, BitOutputStream out) {
+		int bits = in.readBits(BITS_PER_WORD);
+		while(bits!= -1) {
+			if (bits == -1) {
+				throw new HuffException("bad input, no PSEUDO_EOF");
+			}
+		    String code = codings[bits];
+		    out.writeBits(code.length(), Integer.parseInt(code,2));
+			bits = in.readBits(BITS_PER_WORD);
+
 		}
+		String code = codings[PSEUDO_EOF];
+		out.writeBits(code.length(), Integer.parseInt(code,2));
+
+
 	}
 	
 	/**
