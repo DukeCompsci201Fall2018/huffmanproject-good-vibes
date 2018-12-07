@@ -118,19 +118,19 @@ public class HuffProcessor {
 
 	}
 	public HuffNode writeHeader(HuffNode root, BitOutputStream out) {
-		int bits = out;
+		int bits = in.readBits(1);
 		HuffNode huff;
 		
 		if (bits == -1) throw new HuffException("reading bits has failed");
 		
 		if (bits == 0) {
-		    HuffNode left = writeHeader(root.myLeft, out);
-		    HuffNode right = writeHeader(root.myRight, out);
+		    HuffNode left = writeHeader(root.myLeft, in);
+		    HuffNode right = writeHeader(root.myRight, in);
 		    return new HuffNode(0, 0, left, right); 
 		}
 		
 		else {
-		    int morebits = out.readBits(BITS_PER_WORD + 1);
+		    int morebits = in.readBits(BITS_PER_WORD + 1);
 		    return new HuffNode(morebits, 0, null, null);
 		}
 	}
