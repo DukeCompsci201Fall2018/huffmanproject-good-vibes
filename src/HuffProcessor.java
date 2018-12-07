@@ -102,11 +102,11 @@ public class HuffProcessor {
 	public String[] makeCodingsFromTree(HuffNode root) {
 		String[] encodings = new String[ALPH_SIZE + 1];
 	    codingHelper(root,"",encodings);
-
+***********************
 	}
 	
 	public void codingHelper(HuffNode root, String word, String[] encodings) {
-		
+************************
 	}
 	
 	/**
@@ -118,6 +118,8 @@ public class HuffProcessor {
 	 * @param out
 	 *            Buffered bit stream writing to the output file.
 	 */
+	
+	//decompress works successfully tested.
 	public void decompress(BitInputStream in, BitOutputStream out){
 
 		int magicbits = in.readBits(BITS_PER_INT);
@@ -128,7 +130,6 @@ public class HuffProcessor {
 		
 		HuffNode root = readTreeHeader(in);
 		readCompressedBits(root, in, out);
-		out.close();
 	}
 	
 	public HuffNode readTreeHeader(BitInputStream in) {
@@ -145,7 +146,7 @@ public class HuffProcessor {
 			}
 			
 			else {
-			    int morebits = in.readBits(BITS_PER_INT + 1);
+			    int morebits = in.readBits(BITS_PER_WORD + 1);
 			    return new HuffNode(morebits, 0, null, null);
 			}
 	}
@@ -155,35 +156,31 @@ public class HuffProcessor {
 			HuffNode current = root; 
 			
 				while (true) {
-					
 					int bits = in.readBits(1);
-					if (bits == -1) throw new HuffException("bad input, no PSEUDO_EOF");
-					
+					if (bits == -1) {
+						
+						throw new HuffException("bad input, no PSEUDO_EOF");
+						
+					}
 					else { 
 						
 						if (bits == 0) current = current.myLeft;
-						
 						else current = current.myRight;	 
 							
 						// if current is a leaf node
 						if (current.myLeft == null && current.myRight == null) {
-							
 							if (current.myValue == PSEUDO_EOF) {
-								
 								break;   // out of loop
 								
 							}
-			                   
 				            else {
 				            	
 				            	out.writeBits(BITS_PER_WORD, current.myValue);
 				            	current = root; 
-				            	
 				            }
 						}
 					}
 				}
-				
 			in.close();
 			out.close(); 
 	}
