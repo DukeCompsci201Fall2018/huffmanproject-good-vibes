@@ -117,6 +117,23 @@ public class HuffProcessor {
 		codingHelper(root.myRight,path+"1",encodings);
 
 	}
+	public HuffNode writeHeader(HuffNode root, BitOutputStream out) {
+		int bits = out;
+		HuffNode huff;
+		
+		if (bits == -1) throw new HuffException("reading bits has failed");
+		
+		if (bits == 0) {
+		    HuffNode left = writeHeader(root.myLeft, out);
+		    HuffNode right = writeHeader(root.myRight, out);
+		    return new HuffNode(0, 0, left, right); 
+		}
+		
+		else {
+		    int morebits = out.readBits(BITS_PER_WORD + 1);
+		    return new HuffNode(morebits, 0, null, null);
+		}
+	}
 	
 	/**
 	 * Decompresses a file. Output file must be identical bit-by-bit to the
